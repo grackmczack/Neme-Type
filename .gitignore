@@ -20,3 +20,7 @@ assets/nemesis_aesthetik.png
 # Lokale Quellbilder (Produktfoto mit Platzhalter-Logo, 8-Bit-Original): nur die verarbeiteten Assets in assets/gen/ gehören ins Repository
 assets/Sportwasserflasche.jpg
 assets/Nemesis-8bit.png
+# Zugangsdaten gehören nie ins Repository oder in den Webroot
+strato-*
+*-key
+*credentials*

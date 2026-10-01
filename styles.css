@@ -270,6 +270,7 @@ kbd { padding: 6px 7px; font-size: 8px; color: var(--ink); background: linear-gr
 .arsenal-extras b { color: var(--yellow); font-weight: 700; }
 .site-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 18px; margin-top: 26px; padding-top: 14px; border-top: 3px dotted rgba(39, 211, 218, .4); font-family: var(--px); font-size: 7px; line-height: 1.8; color: var(--muted); }
 .site-footer b { color: var(--pink); font-weight: 400; }
+.privacy-note { flex-basis: 100%; color: var(--muted); opacity: .8; }
 .footer-star { color: var(--yellow); }
 .toast { position: fixed; z-index: 30; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); transform: translateX(-50%); max-width: min(92vw, 520px); padding: 10px 14px; font-family: var(--px); font-size: 8px; line-height: 1.7; color: var(--ink); background: var(--yellow); border: 3px solid var(--ink); border-radius: 8px; box-shadow: 0 5px 0 rgba(0, 0, 0, .5); }
 

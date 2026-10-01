@@ -354,7 +354,8 @@ test('intro: plays through all lines into the campaign and can be skipped', () =
 
 test('an invincible autopilot can play the whole campaign to the rescued bottle', () => {
   let report;
-  const game = makeGame({ onEnd: (result) => { report = result; } });
+  const tracked = [];
+  const game = makeGame({ onEnd: (result) => { report = result; }, onTrack: (name, props) => tracked.push([name, props]) });
   game.player.lives = 99;
   let frames = 0;
   while (!report && frames < 30 * 900) {
@@ -376,6 +377,13 @@ test('an invincible autopilot can play the whole campaign to the rescued bottle'
   assert.ok(report, `campaign finished within the time limit (frames=${frames}, stage=${game.stage + 1}, status=${game.status})`);
   assert.equal(report.won, true);
   assert.equal(report.stage, 4);
+  const names = tracked.map(([name]) => name);
+  assert.equal(names.filter((n) => n === 'game_start').length, 1);
+  assert.deepEqual(tracked.filter(([n]) => n === 'sector').map(([, p]) => p.stage), [1, 2, 3, 4]);
+  assert.deepEqual(tracked.filter(([n]) => n === 'boss_down').map(([, p]) => p.stage), [1, 2, 3, 4]);
+  const end = tracked.find(([n]) => n === 'game_end')[1];
+  assert.deepEqual([end.won, end.stage, end.cheated, end.difficulty], [1, 4, 0, 'normal']);
+  assert.equal(end.score, report.score);
   game.destroy();
 });
 

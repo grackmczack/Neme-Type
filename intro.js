@@ -225,6 +225,7 @@ export class Intro {
     this.phase = 'lines';
     this.outroT = 0;
     this.done = false;
+    this.skipped = false;
     this.abductAt = -1;
     this.flash = 0;
     this.shake = 0;
@@ -243,6 +244,7 @@ export class Intro {
 
   skip() {
     if (this.done) return;
+    this.skipped = true;
     this.done = true;
   }
 

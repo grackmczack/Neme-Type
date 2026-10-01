@@ -1,4 +1,5 @@
 import { NemeGame } from './game.js';
+import { track } from './analytics.js';
 
 const $ = (id) => document.getElementById(id);
 const SCORE_KEY = 'neme-type-scores-v1';
@@ -140,7 +141,11 @@ const game = new NemeGame($('game'), {
   onHud: updateHud,
   onDialog: showDialog,
   onEnd: endGame,
-  onEvent: (event) => { if (event && ['konami', 'info'].includes(event.type) && event.text) toast(event.text); },
+  onTrack: track,
+  onEvent: (event) => {
+    if (event?.type === 'konami') track('konami');
+    if (event && ['konami', 'info'].includes(event.type) && event.text) toast(event.text);
+  },
 });
 // Debug-Zugriff nur lokal oder mit ?debug, nicht auf einer öffentlichen Domain.
 if (['localhost', '127.0.0.1'].includes(location.hostname) || new URLSearchParams(location.search).has('debug')) window.nemeGame = game;
@@ -190,6 +195,7 @@ function updateSoundButton() {
 updateSoundButton();
 function toggleSound() {
   muted = !muted;
+  track(muted ? 'sound_off' : 'sound_on');
   game.setMuted(muted);
   if (!muted) game.chip.init();
   updateSoundButton();
@@ -199,7 +205,7 @@ $('sound-button').addEventListener('click', toggleSound);
 $('fullscreen-button').addEventListener('click', async () => {
   try {
     if (document.fullscreenElement) await document.exitFullscreen();
-    else if ($('arcade').requestFullscreen) await $('arcade').requestFullscreen();
+    else if ($('arcade').requestFullscreen) { await $('arcade').requestFullscreen(); track('fullscreen'); }
     else toast('Vollbild wird in diesem Browser nicht unterstützt.');
   } catch { toast('Vollbild ist in diesem Browser gerade nicht verfügbar.'); }
 });
@@ -268,7 +274,9 @@ $('score-form').addEventListener('submit', async (event) => {
     submitted = true;
     $('player-name').disabled = true;
     $('save-score').textContent = 'GESPEICHERT ✓';
+    track('score_saved');
     $('save-status').textContent = leaderboardMode === 'server' ? 'Dein Score ist auf dem Server gespeichert. GG!' : 'Dein Score ist in diesem Browser gespeichert. GG!';
   }
 });
 loadLeaderboard();
+track('pageview');

@@ -109,6 +109,7 @@ export class NemeGame {
     this._initAudio();
     this.options.onDialog?.(null);
     if (cheat) this._applyCheat();
+    this._withIntro = Boolean(intro);
     if (intro) {
       this._status = 'intro';
       this.intro.start();
@@ -122,6 +123,7 @@ export class NemeGame {
     this._status = 'playing';
     this.chip.stopMusic();
     this.chip.sfx('start');
+    this.options.onTrack?.('game_start', { difficulty: this.difficulty, intro: this._withIntro ? 1 : 0 });
     this._announceStage();
     this._banner('SEKTOR 01', SECTORS[0].name, SECTORS[0].color);
     this.chat('start');
@@ -357,7 +359,11 @@ export class NemeGame {
     else if (this._status === 'card') this._updateCard(dt);
     else if (this._status === 'intro') {
       this.intro.update(dt);
-      if (this.intro.done) { this.intro.done = false; this._beginCampaign(); }
+      if (this.intro.done) {
+        this.intro.done = false;
+        this.options.onTrack?.(this.intro.skipped ? 'intro_skipped' : 'intro_done', {});
+        this._beginCampaign();
+      }
     }
     if (!['paused', 'intro'].includes(this._status)) {
       this._updateParticles(dt);
@@ -898,6 +904,7 @@ export class NemeGame {
     const boss = this.boss;
     if (!boss) return;
     const flawless = !this.bossDamaged;
+    this.options.onTrack?.('boss_down', { stage: this.stage + 1, flawless: flawless ? 1 : 0 });
     this.score += 2500 + this.stage * 1000;
     if (flawless) this.score += 1500;
     if (this.fatality) this.score += 2000;
@@ -1002,6 +1009,7 @@ export class NemeGame {
   _announceStage() {
     const sector = SECTORS[this.stage];
     this.options.onStage?.({ number: this.stage + 1, name: sector.name, subtitle: sector.subtitle, bossName: sector.boss });
+    this.options.onTrack?.('sector', { stage: this.stage + 1 });
     this.options.onEvent?.({ type: 'sector', text: `Sektor ${this.stage + 1}: ${sector.name}` });
   }
 
@@ -1066,6 +1074,10 @@ export class NemeGame {
     this.chip.sfx(won ? 'win' : 'lose');
     this.highScore = Math.max(this.highScore, this.score);
     this._emitHud(true);
+    this.options.onTrack?.('game_end', {
+      won: won ? 1 : 0, stage: this.stage + 1, score: Math.min(1_000_000, Math.floor(this.score)), kills: this.kills,
+      secs: Math.min(7200, Math.round(this.elapsed)), difficulty: this.difficulty, cheated: this.cheat ? 1 : 0,
+    });
     this.options.onEnd?.({
       score: this.score, won, stage: this.stage + 1, kills: this.kills, duration: Math.round(this.elapsed),
       difficulty: this.difficulty, cheated: this.cheat, line: this.gameOverLine,

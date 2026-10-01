@@ -1,0 +1,38 @@
+# Apache-Konfiguration für das Spiel (Plesk, PHP-FPM). Entspricht den Schutzmaßnahmen des Node-Servers (server.mjs).
+Options -Indexes -MultiViews
+ServerSignature Off
+DirectoryIndex index.html
+AddDefaultCharset UTF-8
+AddType text/javascript .js
+AddType image/webp .webp
+AddType font/ttf .ttf
+AddType image/svg+xml .svg
+
+<IfModule mod_headers.c>
+  Header always set Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "no-referrer"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Cross-Origin-Resource-Policy "same-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), fullscreen=(self)"
+  Header always set Strict-Transport-Security "max-age=31536000"
+  # Code und Seiten immer revalidieren (auch hinter Cloudflare), Medien dürfen eine Stunde im Cache liegen
+  <FilesMatch "\.(html|js|css|php|svg|txt)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.(webp|png|ttf)$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Schöne API-Pfade, identisch zum Node-Server
+  RewriteRule ^api/scores/?$ api/scores.php [L]
+  RewriteRule ^api/collect/?$ api/collect.php [L]
+  # Keine Dotfiles, kein PHP außerhalb von api/ und analytics/, keine Generator-Rohbilder
+  RewriteRule (^|/)\. - [F]
+  RewriteRule ^(?!api/|analytics/).*\.php$ - [F]
+  RewriteRule ^assets/gen/raw - [F]
+</IfModule>

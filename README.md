@@ -126,6 +126,21 @@ node scripts/generate-assets.mjs              # alle, oder z. B.: … logo boss2
 
 Die Rohbilder landen in `assets/gen/raw/` (nicht im Repository), die Prompts stehen in `scripts/generate-assets.mjs`. Der Kanister wird anhand des lokalen Referenzfotos `assets/Sportwasserflasche.jpg` erzeugt, die 8-Bit-Figur stammt aus `assets/Nemesis-8bit.png`; beide Quellen liegen nur lokal. Für die Figur braucht `process-assets.sh` Python mit Pillow, numpy und scipy (`scripts/key-sprite.py`, `scripts/split-arm.py`). Fehlen die Bilder, läuft das Spiel mit Code-Figuren und Code-Hintergründen weiter.
 
+## Deployment (Strato-Webspace, Apache + PHP)
+
+Live läuft das Spiel auf einem Plesk-Webspace mit Apache und PHP-FPM, ohne Node-Prozess. `deploy/deploy.sh` lädt per rsync die Spieldateien (`index.html`, JS-Module, `assets/`), die Apache-Konfiguration (`deploy/web/.htaccess`), die PHP-API und das Dashboard hoch:
+
+```bash
+export DEPLOY_USER=<ssh-benutzer> DEPLOY_KEY=~/.ssh/<privater-schluessel>
+ANALYTICS_PASSWORD=<passwort> ./deploy/deploy.sh   # Passwort nur beim ersten Mal oder zum Ändern nötig
+```
+
+- **Highscores:** `deploy/web/api/scores.php` ist die PHP-Version der Node-API (gleicher Vertrag, gleiche Validierung, Limit 8 Einträge pro Minute und Adresse). Die Daten liegen in SQLite außerhalb des Webroots (`~/neme/data/`).
+- **Statistik unter `/analytics/`:** ein kleines, eigenes Tool (PHP + SQLite, kein JavaScript im Dashboard). Anmeldung per Apache Basic Auth, Benutzer `admin`. Gezählt werden Seitenaufrufe, Besucher, Herkunft, Land (über Cloudflare), Gerät und Browser sowie Spielereignisse: Starts, erreichte Sektoren, besiegte Bosse, Game Over und Siege, Spieldauer, Score, Schwierigkeit, Intro übersprungen oder nicht, Ton, Vollbild, Konami-Code. Es gibt keine Cookies, IP-Adressen werden nicht gespeichert (Besucher nur über einen täglich wechselnden Hash gezählt), Do-Not-Track und Global Privacy Control werden respektiert, lokal (`localhost`) wird nichts gesendet. Die Ereignisse sind in `deploy/web/api/collect.php` auf eine feste Liste beschränkt.
+- **Hinter Cloudflare:** Land und echte Client-Adresse werden nur geglaubt, wenn die Anfrage aus einem Cloudflare-Netz kommt.
+- **Datenschutz und Impressum:** Auch eine anonyme Statistik gehört in die Datenschutzerklärung, und eine öffentliche Website braucht ein Impressum. Beides muss der Betreiber selbst ergänzen.
+- **Vor dem Deploy in Plesk prüfen:** Ist als bevorzugte Domain `www` eingestellt, braucht `www` einen DNS-Eintrag (CNAME auf die Hauptdomain), sonst führt die Weiterleitung ins Leere.
+
 ## Sicherheit
 
 - Strikte Content-Security-Policy (`default-src 'none'`, kein Inline-Code), `nosniff`, `X-Frame-Options`, COOP/CORP und Permissions-Policy auf jeder Antwort.

@@ -8,7 +8,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const PROJECT_ROOT = dirname(fileURLToPath(import.meta.url));
 const STATIC_FILES = new Set([
   'index.html', 'styles.css', 'app.js', 'game.js', 'favicon.svg',
-  'content.js', 'sprites.js', 'enemies.js', 'weapons.js', 'bosses.js', 'intro.js', 'render.js', 'audio.js',
+  'content.js', 'analytics.js', 'sprites.js', 'enemies.js', 'weapons.js', 'bosses.js', 'intro.js', 'render.js', 'audio.js',
 ]);
 const MIME_TYPES = new Map([
   ['.html', 'text/html; charset=utf-8'],
