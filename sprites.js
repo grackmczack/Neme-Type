@@ -349,20 +349,27 @@ const MAPS = {
       '...SS..SS...',
     ],
   },
+  // Sportkanister mit Griff-Fenster, Metalldeckel und Haltebändchen
   bottle: {
-    scale: 3, colors: { a: '#8fe8ee', b: '#3a9aa8', c: '#e8ffff' },
+    scale: 3, colors: { a: '#bfeff4', b: '#6fb6c4', c: '#f0ffff', s: '#cfd5df', S: '#7f8aa0', t: '#1fc6c8', n: '#27425e' },
     rows: [
-      '..ttt..',
-      '..SSS..',
-      '.cccbb.',
-      'caaaabb',
-      'caaaabb',
-      'cwnnnbb',
-      'cn316nb',
-      'cwnnnbb',
-      'caaaabb',
-      'caaaabb',
-      '.cbbbb.',
+      '...ssss.....',
+      '..sSSSSs.kk.',
+      '...SSSS..k.k',
+      '..cbbbbb.kk.',
+      '.caaaaaaabb.',
+      'caaaaaaaaabb',
+      'cbbbbbbbbbbb',
+      'caaaaaaaaabb',
+      'cattttaannbb',
+      'catwtwaannbb',
+      'cattttaannbb',
+      'caaaaaaannbb',
+      'cbbbbbbbbbbb',
+      'caaaaaaaaabb',
+      'caaaaaaaaabb',
+      'cbbbbbbbbbbb',
+      '.cbbbbbbbbb.',
     ],
   },
   heart: {
@@ -467,7 +474,7 @@ export function getBackground(index) {
 }
 
 /** Lädt die KI-Grafiken; fehlen sie, läuft das Spiel mit dem Code-Hintergrund weiter. */
-export function loadImages(names = ['bg1', 'bg2', 'bg3', 'bg4', 'boss1', 'boss2', 'boss3', 'boss4', 'logo', 'panda', 'bottle']) {
+export function loadImages(names = ['bg1', 'bg2', 'bg3', 'bg4', 'boss1', 'boss2', 'boss3', 'boss4', 'logo', 'panda', 'bottle', 'nemesis8', 'nemesis8-arm']) {
   if (loading || typeof Image === 'undefined') return;
   loading = true;
   for (const name of names) {

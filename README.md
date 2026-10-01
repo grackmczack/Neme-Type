@@ -2,7 +2,7 @@
 
 Ein 90er-Arcade-Shooter im Browser für die Nemesis316-Community. Ein Fan-Game mit 8-Bit-Intro, vier Sektoren, vier Bossen, fünf Waffen, vierzehn Sorten Gegner mit eigenem Verhalten und einem Fake-Stream-Chat, der alles kommentiert.
 
-**Die Story:** Samstagabend, der Stream läuft. Nemesis316 greift nach seiner XXL-Sportwasserflasche, aber da ist nichts mehr. Dann schalten sich per Dial-up-Modem die intergalaktischen Killer Kiffer zu: „Wir haben deine Flasche.“ Nemesis nennt sie Halodris. Das Spiel beginnt.
+**Die Story:** Donnerstagvormittag, der Stream läuft. Nemesis streamt immer von 9:30 bis 14 Uhr, Montag bis Samstag. Nemesis316 greift nach seiner XXL-Sportwasserflasche, aber da ist nichts mehr. Dann schalten sich per Dial-up-Modem die intergalaktischen Killer Kiffer zu: „Wir haben deine Flasche.“ Nemesis nennt sie Halodris. Das Spiel beginnt.
 
 ## Lokal starten
 
@@ -111,7 +111,7 @@ Die gemeinsame Bestenliste liegt in `data/scores.json`. Diesen Ordner bei Update
 - `audio.js`: Chiptune-Synthesizer (Sektor-Songs, Boss-Track, Modem, Effekte), komplett per WebAudio.
 - `server.mjs`: statischer HTTP-Server und persistente Highscore-API ohne Dependencies.
 - `assets/Nemesis316.png`: bereitgestelltes Porträt, `assets/nemesis_aesthetik.png` (nur lokal, nicht im Repository): Stream-Referenz für Farbwelt und Gestaltung.
-- `assets/gen/`: KI-generierte Grafiken (Logo, vier Sektor-Hintergründe, vier Boss-Porträts, Panda, Flasche).
+- `assets/gen/`: Logo, vier Sektor-Hintergründe, vier Boss-Porträts, Panda und Sportkanister (KI-generiert, der Kanister nach einem Referenzfoto) sowie die 8-Bit-Figur von Nemesis (`nemesis8.webp`, mit separatem Arm `nemesis8-arm.webp` für das Intro).
 - `assets/fonts/`: lokale Schriften mit SIL-OFL-Lizenzen (Press Start 2P, Titan One, Barlow Condensed, Space Grotesk).
 
 ### Grafiken neu erzeugen
@@ -124,7 +124,7 @@ node scripts/generate-assets.mjs              # alle, oder z. B.: … logo boss2
 ./scripts/process-assets.sh                   # Freistellen (Chroma-Key) und Verkleinern, braucht ImageMagick
 ```
 
-Die Rohbilder landen in `assets/gen/raw/` (nicht im Repository), die Prompts stehen in `scripts/generate-assets.mjs`. Fehlen die Bilder, läuft das Spiel mit Code-Hintergründen weiter.
+Die Rohbilder landen in `assets/gen/raw/` (nicht im Repository), die Prompts stehen in `scripts/generate-assets.mjs`. Der Kanister wird anhand des lokalen Referenzfotos `assets/Sportwasserflasche.jpg` erzeugt, die 8-Bit-Figur stammt aus `assets/Nemesis-8bit.png`; beide Quellen liegen nur lokal. Für die Figur braucht `process-assets.sh` Python mit Pillow, numpy und scipy (`scripts/key-sprite.py`, `scripts/split-arm.py`). Fehlen die Bilder, läuft das Spiel mit Code-Figuren und Code-Hintergründen weiter.
 
 ## Sicherheit
 

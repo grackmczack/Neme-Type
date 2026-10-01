@@ -17,3 +17,6 @@ assets/gen/raw/
 .dev-*.html
 # Stream-Screenshot mit Chat-Namen echter Zuschauer: nur lokale Referenz, nicht öffentlich
 assets/nemesis_aesthetik.png
+# Lokale Quellbilder (Produktfoto mit Platzhalter-Logo, 8-Bit-Original): nur die verarbeiteten Assets in assets/gen/ gehören ins Repository
+assets/Sportwasserflasche.jpg
+assets/Nemesis-8bit.png

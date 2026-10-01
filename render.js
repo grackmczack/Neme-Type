@@ -4,7 +4,7 @@ import { FLOOR_Y, CEIL_Y, drawEnemy } from './enemies.js';
 import { drawShot, orbitPositions } from './weapons.js';
 import { BOSSES } from './bosses.js';
 import { getSprite, getBackground, getBossSprite, getPixelImage, images } from './sprites.js';
-import { drawNemesis } from './intro.js';
+import { drawNemesis, drawNemesisSprite } from './intro.js';
 
 const PX = '"Press Start 2P", "Courier New", monospace';
 const BUBBLE = '"Titan One", "Arial Black", sans-serif';
@@ -553,8 +553,8 @@ function drawHud(g, c) {
   // Leben (Flaschen) und Bomben
   const bottle = getSprite('bottle');
   const lives = Math.min(p.lives, 6);
-  for (let i = 0; i < lives; i++) if (bottle) c.drawImage(bottle, 690 + i * 22, 8, bottle.width * 0.6, bottle.height * 0.6);
-  if (p.lives > 6) text(c, `+${p.lives - 6}`, 690 + 6 * 22, 32, { size: 8, color: '#fff', stroke: null });
+  for (let i = 0; i < lives; i++) if (bottle) c.drawImage(bottle, 690 + i * 24, 8, Math.round(bottle.width * 0.5), Math.round(bottle.height * 0.5));
+  if (p.lives > 6) text(c, `+${p.lives - 6}`, 690 + 6 * 24, 32, { size: 8, color: '#fff', stroke: null });
   text(c, 'LEBEN', 690, 41, { size: 6, color: '#9fb4ff', stroke: null });
   for (let i = 0; i < p.bombs; i++) {
     c.fillStyle = '#7ceeff';
@@ -771,7 +771,7 @@ function drawBossCard(g, c) {
   // Nemesis links
   c.save();
   c.translate(-(1 - slide) * 400, 0);
-  drawNemesis(c, 210, 110, 7, 'talk', g._time);
+  if (!drawNemesisSprite(c, 210, 56, 350, { mood: 'silent', t: g._time })) drawNemesis(c, 210, 110, 7, 'talk', g._time);
   text(c, 'PLAYER 1', 210, 440, { size: 12, color: '#62e8ff', align: 'center' });
   text(c, 'NEMESIS316', 210, 462, { size: 14, color: '#fff', align: 'center' });
   c.restore();

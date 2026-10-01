@@ -74,15 +74,109 @@ export function drawNemesis(c, cx, top, u, mood = 'talk', t = 0, look = 0) {
   R(10, 12, 1, 15, '#15131c'); R(3, 27, 8, 1, '#15131c'); R(-2, 26, 6, 6, '#15131c'); R(-1, 27, 4, 4, '#2b2936'); R(0, 28, 1, 1, '#6d6b7c');
 }
 
+// Gesichtspunkte im 8-Bit-Sprite (assets/gen/nemesis8.webp, 335x667) und Armgelenk für die Greif-Geste.
+const FACE = { eyeL: [135, 121], eyeR: [193, 121], mouth: [163, 176], elbow: [38, 300] };
+const spriteCache = new Map();
+
+function layer(key, build) {
+  let item = spriteCache.get(key);
+  if (!item) { item = build(); spriteCache.set(key, item); }
+  return item;
+}
+
+/** Körper ohne linken Unterarm (der Arm wird für die Greif-Geste separat gedreht). */
+function bodyWithoutArm() {
+  const body = images.nemesis8;
+  const arm = images['nemesis8-arm'];
+  if (!body || !arm) return body;
+  return layer('noarm', () => {
+    const cv = document.createElement('canvas');
+    cv.width = body.width; cv.height = body.height;
+    const g = cv.getContext('2d');
+    g.drawImage(body, 0, 0);
+    g.globalCompositeOperation = 'destination-out';
+    g.drawImage(arm, 0, 0);
+    return cv;
+  });
+}
+
+function tinted(img, key, color) {
+  return layer(key, () => {
+    const cv = document.createElement('canvas');
+    cv.width = img.width; cv.height = img.height;
+    const g = cv.getContext('2d');
+    g.drawImage(img, 0, 0);
+    g.globalCompositeOperation = 'source-atop';
+    g.fillStyle = color;
+    g.fillRect(0, 0, cv.width, cv.height);
+    return cv;
+  });
+}
+
+/**
+ * Zeichnet die 8-Bit-Version von Nemesis. height = Höhe des ganzen Sprites, crop = sichtbarer Anteil von oben,
+ * armAngle (Radiant, optional) dreht den linken Unterarm um den Ellbogen. Gibt false zurück, wenn das Bild fehlt.
+ */
+export function drawNemesisSprite(c, cx, top, height, { mood = 'silent', t = 0, crop = 1, armAngle = null, look = 0 } = {}) {
+  const img = images.nemesis8;
+  if (!img) return false;
+  const k = height / img.height;
+  const w = img.width * k;
+  const x0 = cx - w / 2;
+  const P = ([sx, sy]) => [x0 + sx * k, top + sy * k];
+  const split = armAngle !== null && images['nemesis8-arm'];
+  let body = split ? bodyWithoutArm() : img;
+  if (mood === 'angry') body = tinted(body, split ? 'angry-noarm' : 'angry', 'rgba(255,40,30,0.38)');
+  const visible = img.height * crop;
+  c.drawImage(body, 0, 0, img.width, visible, x0, top, w, visible * k);
+  if (split) {
+    const [ex, ey] = P(FACE.elbow);
+    c.save();
+    c.translate(ex, ey);
+    c.rotate(armAngle);
+    c.drawImage(images['nemesis8-arm'], -FACE.elbow[0] * k, -FACE.elbow[1] * k, w, height);
+    c.restore();
+  }
+  // Gesichtsausdruck als Overlay
+  const R = (sx, sy, sw, sh, color) => { const [x, y] = P([sx, sy]); c.fillStyle = color; c.fillRect(Math.round(x), Math.round(y), Math.max(1, Math.round(sw * k)), Math.max(1, Math.round(sh * k))); };
+  const [lx, ly] = FACE.eyeL;
+  const [rx, ry] = FACE.eyeR;
+  const [mx, my] = FACE.mouth;
+  if (mood === 'surprised') {
+    R(lx - 14, ly - 10, 28, 20, '#ffffff'); R(rx - 14, ry - 10, 28, 20, '#ffffff');
+    R(lx - 4 + look * 3, ly - 4, 9, 9, '#1b1210'); R(rx - 4 + look * 3, ry - 4, 9, 9, '#1b1210');
+    R(lx - 16, ly - 24, 30, 6, '#3a271e'); R(rx - 14, ry - 24, 30, 6, '#3a271e');
+    R(mx - 11, my - 3, 22, 20, '#4d1720');
+  } else if (mood === 'angry') {
+    R(lx - 13, ly - 5, 26, 12, '#ffffff'); R(rx - 13, ry - 5, 26, 12, '#ffffff');
+    R(lx - 6, ly - 4, 12, 10, '#ff2a2a'); R(rx - 6, ry - 4, 12, 10, '#ff2a2a');
+    c.strokeStyle = '#1b1210'; c.lineWidth = Math.max(3, 10 * k); c.lineCap = 'butt';
+    const brow = (a, b) => { const [x1, y1] = P(a); const [x2, y2] = P(b); c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke(); };
+    brow([lx - 22, ly - 20], [lx + 16, ly - 5]); brow([rx + 22, ry - 20], [rx - 16, ry - 5]);
+    R(mx - 20, my - 4, 40, 24, '#4d1720'); R(mx - 20, my - 4, 40, 6, '#ffffff');
+  } else if (mood === 'talk') {
+    const open = Math.sin(t * 14) > 0.15;
+    R(mx - 12, my - 1, 24, open ? 11 : 3, '#4d1720');
+  }
+  return true;
+}
+
 function drawBottlePx(c, x, y, u, tilt = 0) {
   c.save();
   c.translate(x, y);
   c.rotate(tilt);
   const R = rect(c, 0, 0, u);
-  R(-3, 0, 6, 3, '#36c9c9'); R(-2, 3, 4, 2, '#8a97b5');
-  R(-5, 5, 10, 3, '#c8faff'); R(-6, 8, 12, 18, '#a8f0f6'); R(-6, 8, 2, 18, '#e8ffff'); R(4, 8, 2, 18, '#6cc9d4');
-  R(-6, 13, 12, 7, '#27466e'); R(-4, 14, 2, 5, '#e8fff0'); R(-1, 14, 2, 5, '#e8fff0'); R(2, 14, 2, 5, '#e8fff0');
-  R(-5, 26, 10, 1, '#6cc9d4');
+  // Deckel, Haltebändchen
+  R(-3, 0, 6, 3, '#cfd5df'); R(-3, 0, 6, 1, '#f2f5fa'); R(-2, 3, 4, 1, '#7f8aa0');
+  R(3, 1, 4, 1, '#1b1b24'); R(6, 1, 1, 4, '#1b1b24'); R(3, 4, 4, 1, '#1b1b24');
+  // Körper mit Rippen
+  R(-6, 4, 12, 21, '#bfeff4'); R(-6, 4, 2, 21, '#f0ffff'); R(4, 4, 2, 21, '#6fb6c4');
+  R(-7, 6, 1, 17, '#27425e'); R(6, 6, 1, 17, '#27425e'); R(-5, 4, 10, 1, '#27425e'); R(-5, 25, 10, 1, '#27425e');
+  R(-6, 8, 12, 1, '#8fcad6'); R(-6, 21, 12, 1, '#8fcad6');
+  // Griff-Fenster rechts
+  R(2, 11, 3, 9, '#27425e');
+  // 316-Etikett
+  R(-5, 12, 7, 6, '#1fc6c8'); R(-4, 13, 1, 4, '#ffffff'); R(-2, 13, 1, 4, '#ffffff'); R(0, 13, 1, 4, '#ffffff');
   c.restore();
 }
 
@@ -312,30 +406,37 @@ export class Intro {
     if (lift < 0.97) drawBottlePx(c, bx, by, 4, Math.sin(t * 9) * lift * 0.18);
     // Nemesis
     const cx = 330;
-    const top = 168;
-    const mood = this.i >= 2 && this.line.scene === 0 ? 'surprised' : this.line.who === 'nem' ? 'talk' : 'silent';
+    const surprised = this.i >= 2 && this.line.scene === 0;
     const talking = this.line.who === 'nem' && this.typed < this.line.text.length;
-    drawNemesis(c, cx, top, 4, talking || mood === 'surprised' ? mood : 'silent', t, this.i === 1 ? -1 : 0);
-    // Arm greift zur Flasche
-    if (this.i >= 1) {
-      const reach = ease((this.i === 1 ? this.lineT - 0.4 : 9) / 1.3);
-      const sx = cx - 15 * 4;
-      const sy = top + 34 * 4;
-      const hx = sx + (bx - sx) * reach;
-      const hy = sy + (372 - sy) * reach;
-      c.strokeStyle = '#6d6d78'; c.lineCap = 'round'; c.lineWidth = 26;
-      c.beginPath(); c.moveTo(sx, sy); c.lineTo(hx + 18, hy - 12); c.stroke();
-      c.strokeStyle = '#e3b48e'; c.lineWidth = 22;
-      c.beginPath(); c.moveTo(hx + 18, hy - 12); c.lineTo(hx, hy); c.stroke();
-      const squeeze = this.i >= 2 ? Math.abs(Math.sin(t * 7)) * 4 : 0;
-      c.fillStyle = '#e3b48e'; c.fillRect(Math.round(hx - 14 + squeeze), Math.round(hy - 16), 28 - squeeze * 2, 32);
-      c.fillStyle = '#c99a78'; c.fillRect(Math.round(hx - 14 + squeeze), Math.round(hy + 10), 28 - squeeze * 2, 6);
+    const mood = surprised ? 'surprised' : talking ? 'talk' : 'silent';
+    const reach = this.i >= 1 ? ease((this.i === 1 ? this.lineT - 0.4 : 9) / 1.3) : 0;
+    const hop = surprised ? Math.max(0, 1 - this.lineT * 5) * 14 : 0;
+    c.save();
+    c.beginPath();
+    c.rect(0, 0, W, 402); // der Schreibtisch verdeckt den Rest
+    c.clip();
+    // Unterarm: von hängend (Hand in der Tasche) bis waagerecht zur Flasche; danach greift er zitternd ins Leere
+    const armAngle = 0.1 + reach * 1.9 + (this.i >= 2 ? Math.sin(t * 38) * 0.04 : 0);
+    const drawn = drawNemesisSprite(c, cx, 150 - hop, 440, { mood, t, armAngle: reach > 0 ? armAngle : null, look: this.i === 1 ? -1 : 0 });
+    c.restore();
+    if (!drawn) {
+      // Ausweichlösung ohne Bild: Code-Figur wie bisher
+      drawNemesis(c, cx, 168, 4, talking || surprised ? mood : 'silent', t, this.i === 1 ? -1 : 0);
+      if (this.i >= 1) {
+        const sx = cx - 15 * 4;
+        const sy = 168 + 34 * 4;
+        const hx = sx + (bx - sx) * reach;
+        const hy = sy + (372 - sy) * reach;
+        c.strokeStyle = '#6d6d78'; c.lineCap = 'round'; c.lineWidth = 26;
+        c.beginPath(); c.moveTo(sx, sy); c.lineTo(hx + 18, hy - 12); c.stroke();
+        c.fillStyle = '#e3b48e'; c.fillRect(Math.round(hx - 14), Math.round(hy - 16), 28, 32);
+      }
     }
     // Fragezeichen-Blase
     if (this.i >= 2) {
       const pop = ease(this.lineT / 0.25);
       c.save();
-      c.translate(440, 150);
+      c.translate(440, 172);
       c.scale(pop, pop);
       c.fillStyle = '#ffffff'; c.fillRect(-46, -32, 92, 60); c.fillRect(-30, 28, 12, 12);
       c.strokeStyle = '#160d2e'; c.lineWidth = 4; c.strokeRect(-46, -32, 92, 60);
@@ -344,7 +445,19 @@ export class Intro {
     }
     c.textAlign = 'left';
     c.restore();
-    this._titleTag(c, 'STREAM: JUST CHATTING');
+    this._clock(c);
+    this._titleTag(c, 'LIVE · JUST CHATTING · MO-SA 9:30-14:00');
+  }
+
+  /** Digitaluhr an der Wand: Vormittag, der Stream läuft. */
+  _clock(c) {
+    const colon = Math.floor(this.t * 2) % 2 === 0 ? ':' : ' ';
+    c.fillStyle = '#0a0630'; c.fillRect(392, 44, 140, 52);
+    c.strokeStyle = '#27d3da'; c.lineWidth = 3; c.strokeRect(393.5, 45.5, 137, 49);
+    c.fillStyle = '#ff4b5c'; c.font = `24px ${FONT_PX}`; c.textAlign = 'left';
+    c.fillText(`10${colon}47`, 404, 86);
+    c.fillStyle = '#9fb4ff'; c.font = `6px ${FONT_PX}`;
+    c.fillText('DONNERSTAG', 404, 57);
   }
 
   _titleTag(c, text) {
@@ -447,7 +560,7 @@ export class Intro {
     }
     c.fillStyle = 'rgba(0,0,0,0.25)'; c.fillRect(0, 0, W, H);
     const idx0 = INTRO_LINES.findIndex((l) => l.scene === 2);
-    drawNemesis(c, W / 2, 70, 10, 'angry', t);
+    if (!drawNemesisSprite(c, W / 2, 24 + Math.sin(t * 30) * 2, 1060, { mood: 'angry', t, crop: 0.44 })) drawNemesis(c, W / 2, 70, 10, 'angry', t);
     // Dampf aus den Ohren
     for (let s = 0; s < 6; s++) {
       const p = ((t * 0.8 + s / 6) % 1);

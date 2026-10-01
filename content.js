@@ -113,7 +113,7 @@ export const SECTORS = [
     name: 'BONG-NEBEL', subtitle: 'Durch das Matrix-Gewächshaus', duration: 56,
     color: '#3dffb8', accent: '#9dff6a', bg: 'bg2', boss: 'Bongzilla', bossKind: 1,
     enemies: [E.kraken, E.phaser, E.shield, E.swarm],
-    bossReply: 'Guten Abend, Rick! RAAAWR. …Das war die Begrüßung.',
+    bossReply: 'Guten Morgen, Rick! RAAAWR. …Das war die Begrüßung.',
     clear: 'Bongzilla ist platt. Aber dieser Sektor war nur Level 2 von 4!',
     palette: ['#00120e', '#06301f', '#0f5a3a'],
   },
@@ -129,7 +129,7 @@ export const SECTORS = [
     name: 'FESTUNG DÜBEL', subtitle: 'Die Sportwasserflasche ist zum Greifen nah', duration: 62,
     color: '#ff6a3d', accent: '#ffd05a', bg: 'bg4', boss: 'Lord Dübel', bossKind: 3,
     enemies: [E.nokia, E.spiral, E.shield, E.sniper],
-    bossReply: 'Guten Abend, Rick! Natürlich grüße ich zurück. Ich bin doch kein Unmensch.',
+    bossReply: 'Guten Morgen, Rick! Natürlich grüße ich zurück. Ich bin doch kein Unmensch.',
     clear: 'FLAWLESS? Egal. Die Flasche gehört dir!',
     palette: ['#14050a', '#3a0f14', '#7a2214'],
   },
@@ -188,11 +188,11 @@ export const CHAT_LINES = {
 
 // Intro-Dialog (8-Bit-Cutscene). Jede Zeile: Sprecher, Text. `who`: nem, k1, k2, k3, narr
 export const INTRO_LINES = [
-  { scene: 0, who: 'narr', text: 'SAMSTAGABEND, 21:47 UHR. DER STREAM LÄUFT. 8 VIEWER SIND DA. ALLE MIT ANSPRUCH.' },
+  { scene: 0, who: 'narr', text: 'DONNERSTAGVORMITTAG, 10:47 UHR. STREAM-ZEIT IST MO BIS SA VON 9:30 BIS 14:00. 8 VIEWER SIND DA. ALLE MIT ANSPRUCH.' },
   { scene: 0, who: 'nem', text: 'So Leute, kurzer Schluck, dann geht es weiter …' },
   { scene: 0, who: 'nem', text: 'Hä? …Wo ist meine FLASCHE?!' },
   { scene: 1, who: 'narr', text: 'PIEEEP … KSCHHHH … DING-DONG! VERBINDUNG HERGESTELLT.' },
-  { scene: 1, who: 'k1', text: 'Jo, Nemesis! Wir schalten uns kurz zu.' },
+  { scene: 1, who: 'k1', text: 'Jo, Nemesis! Schön, dass du so früh live bist. Wir schalten uns kurz zu.' },
   { scene: 1, who: 'k2', text: 'Wir sind die intergalaktischen Killer Kiffer. Und wir haben deine Flasche.' },
   { scene: 1, who: 'k3', text: '*gluck gluck* Die ist… sehr erfrischend. Danke dafür!' },
   { scene: 2, who: 'nem', text: 'Ihr … ihr HALODRIS!' },

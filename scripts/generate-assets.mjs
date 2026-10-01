@@ -1,7 +1,7 @@
 // Erzeugt die KI-Grafiken (Logo, Sektor-Hintergründe, Boss-Porträts, Maskottchen) über Replicate.
 // Nutzung: REPLICATE_API_TOKEN=... node scripts/generate-assets.mjs [name ...]
 // Die Rohbilder landen in RAW_DIR; scripts/process-assets.sh erzeugt daraus die Spiel-Assets.
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const TOKEN = process.env.REPLICATE_API_TOKEN;
@@ -55,7 +55,9 @@ export const JOBS = {
   },
   bottle: {
     ratio: '1:1',
-    prompt: `Game item icon: a huge shiny transparent sports water bottle with a teal cap and a big bold label reading "316", sparkling water drops, glowing aura and sparkles, slight heroic tilt, thick dark outline cartoon style, ${GREEN}`,
+    // Referenzfoto (lokal, nicht im Repository): der echte Sportkanister mit Griff-Fenster und Metalldeckel.
+    reference: 'assets/Sportwasserflasche.jpg',
+    prompt: `Game item icon: exactly this large transparent plastic sports water jug with a handle window on the right and a silver screw cap with a black strap loop. Remove the "YOUR LOGO" print and instead show a big bold glossy number "316" in cyan with dark outline on the front. Sparkling water drops, glowing aura and sparkles, slight heroic tilt, thick dark outline cartoon style, ${GREEN}`,
   },
 };
 
@@ -69,11 +71,16 @@ async function api(path, init = {}) {
   return body;
 }
 
-async function generate(name, { prompt, ratio }) {
+async function generate(name, { prompt, ratio, reference }) {
+  const input = { prompt, aspect_ratio: ratio, negative_prompt: 'blurry, low quality, watermark, signature, photo, realistic human face, "YOUR LOGO"' };
+  if (reference) {
+    const bytes = await readFile(reference);
+    input.image = `data:${reference.endsWith('.png') ? 'image/png' : 'image/jpeg'};base64,${bytes.toString('base64')}`;
+  }
   let prediction = await api(`/models/${MODEL}/predictions`, {
     method: 'POST',
     headers: { Prefer: 'wait=60' },
-    body: JSON.stringify({ input: { prompt, aspect_ratio: ratio, negative_prompt: 'blurry, low quality, watermark, signature, photo, realistic human face' } }),
+    body: JSON.stringify({ input }),
   });
   while (!['succeeded', 'failed', 'canceled'].includes(prediction.status)) {
     await new Promise((r) => setTimeout(r, 2500));
