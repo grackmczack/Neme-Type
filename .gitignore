@@ -1,0 +1,19 @@
+node_modules/
+# Laufzeitdaten und lokale Highscores
+data/scores.json
+data/scores.json.*.tmp
+# Generator-Rohbilder (reproduzierbar über scripts/generate-assets.mjs)
+assets/gen/raw/
+# Lokale Agent-/Cloud-Konfigurationen und mögliche Zugangsdaten
+.agents/
+.aws/
+.codex/
+.claude/
+.env
+.env.*
+*.pem
+*.key
+# Entwicklungs-Hilfsseiten
+.dev-*.html
+# Stream-Screenshot mit Chat-Namen echter Zuschauer: nur lokale Referenz, nicht öffentlich
+assets/nemesis_aesthetik.png

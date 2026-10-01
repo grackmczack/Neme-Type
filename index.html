@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14062b">
+  <meta name="description" content="Nemesis316 gegen die intergalaktischen Killer Kiffer: ein kostenloser 90er-Arcade-Shooter im Browser mit 8-Bit-Intro, 4 Sektoren, 4 Bossen und 5 Waffen.">
+  <title>Nemesis316 gegen die intergalaktischen Killer Kiffer</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/PressStart2P-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="assets/fonts/TitanOne-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <div class="cosmos" aria-hidden="true"></div>
+
+  <header class="marquee-wrap">
+    <div class="toolbar">
+      <span class="credit"><i></i> CREDIT 01 · FREE PLAY</span>
+      <div class="toolbar-buttons">
+        <button class="icon-button" id="sound-button" aria-label="Ton einschalten" aria-pressed="false" title="Ton einschalten (M)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path id="sound-waves" d="m16 9 5 6m0-6-5 6"/></svg></button>
+        <button class="icon-button" id="fullscreen-button" aria-label="Vollbild" title="Vollbild"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="marquee">
+      <h1>
+        <img class="marquee-logo" src="assets/gen/logo.webp" width="900" height="330" alt="Nemesis316 gegen die intergalaktischen Killer Kiffer">
+        <span class="sr-only">Nemesis316 gegen die intergalaktischen Killer Kiffer</span>
+      </h1>
+      <p class="marquee-tag"><span>★</span> DER 90ER-ARCADE-SHOOTER AUS DEM NEMESIS-UNIVERSUM <span>★</span></p>
+    </div>
+  </header>
+
+  <main>
+    <section class="cabinet" aria-label="Arcade-Automat">
+      <div class="arcade" id="arcade">
+        <div class="screen" id="screen">
+          <canvas id="game" width="960" height="540" tabindex="0" aria-label="Spielfeld. WASD oder Pfeiltasten zum Bewegen, Leertaste zum Schießen, X zum Aufladen, Q wechselt die Waffe."></canvas>
+
+          <div class="overlay title-overlay" id="intro">
+            <div class="title-actions">
+              <button class="start-button" id="start-button"><span class="blink">PRESS START</span></button>
+              <p class="title-hint">ENTER DRÜCKEN · TIPP: DER KONAMI-CODE FUNKTIONIERT <b>↑↑↓↓←→←→BA</b></p>
+            </div>
+          </div>
+
+          <div class="overlay pause-overlay" id="pause-overlay" hidden>
+            <span class="tag">DURCHATMEN. OHNE GRASGERUCH.</span>
+            <h2 class="bubble">PAUSE</h2>
+            <p id="pause-reason">Die Galaxie kann kurz warten.</p>
+            <button class="primary-button" id="resume-button">▶ WEITERFLIEGEN</button>
+            <button class="text-button" id="restart-button">MISSION NEU STARTEN</button>
+            <button class="text-button" id="title-button">ZURÜCK ZUM TITEL</button>
+          </div>
+
+          <div class="rick-dialog" id="rick-dialog" hidden role="status">
+            <div class="rick-avatar" id="dialog-avatar" aria-hidden="true">R</div>
+            <div class="dialog-copy"><span id="dialog-name">DARTHRICK <b>MOD</b></span><p id="dialog-text"></p></div>
+            <button id="dialog-skip" aria-label="Begrüßung überspringen" title="Enter: weiter">WEITER <span>↵</span></button>
+          </div>
+
+          <div class="overlay end-overlay" id="end-overlay" hidden>
+            <span class="tag" id="end-tag">MISSION REPORT</span>
+            <h2 class="bubble" id="end-title">GAME OVER</h2>
+            <p class="continue" id="continue-line" aria-hidden="true"></p>
+            <p id="end-description"></p>
+            <div class="result-stats"><div><span>SCORE</span><strong id="end-score">0</strong></div><div><span>ABSCHÜSSE</span><strong id="end-kills">0</strong></div><div><span>SEKTOR</span><strong id="end-stage">1 / 4</strong></div></div>
+            <form id="score-form"><label for="player-name">VEREWIGE DICH IN DER HALL OF FLAME</label><div class="name-row"><input id="player-name" name="name" maxlength="18" placeholder="Dein Name" autocomplete="nickname" required aria-label="Dein Name für die Bestenliste"><button class="primary-button" id="save-score" type="submit">EINTRAGEN ↗</button></div><p id="save-status" aria-live="polite"></p></form>
+            <button class="text-button" id="play-again">↻ NOCH EINE RUNDE</button>
+          </div>
+        </div>
+        <div class="title-options" id="title-options">
+          <div class="title-row">
+            <div class="difficulty">
+              <span>SCHWIERIGKEIT</span>
+              <div class="segmented" role="group" aria-label="Schwierigkeit">
+                <button data-difficulty="easy" aria-pressed="false">ENTSPANNT</button>
+                <button data-difficulty="normal" class="selected" aria-pressed="true">ARCADE</button>
+                <button data-difficulty="hard" aria-pressed="false">NEMESIS</button>
+              </div>
+            </div>
+            <label class="switch"><input type="checkbox" id="intro-toggle" checked><span class="switch-box" aria-hidden="true"></span><span>8-BIT-INTRO</span></label>
+          </div>
+        </div>
+        <div class="bezel-foot"><span><span class="status-dot"></span><span id="flight-status">BEREIT ZUM ABFLUG</span></span><span class="bezel-brand">NEMESIS ARCADE · MK-316</span><button class="mini-button" id="pause-button" aria-label="Spiel pausieren" title="Pause (P)" disabled>Ⅱ PAUSE</button></div>
+      </div>
+
+      <div class="control-panel" aria-label="Steuerung">
+        <div class="joystick" aria-hidden="true"><i></i><b></b></div>
+        <div class="key-list">
+          <div><kbd>W A S D</kbd><span>Fliegen</span></div>
+          <div><kbd>SPACE</kbd><span>Feuer (halten)</span></div>
+          <div><kbd>X</kbd><span>Ladeschuss</span></div>
+          <div><kbd>Q</kbd><span>Waffe wechseln</span></div>
+          <div><kbd>E</kbd><span>Force-Satellit</span></div>
+          <div><kbd>B</kbd><span>Wasserbombe</span></div>
+          <div><kbd>P</kbd><span>Pause</span></div>
+        </div>
+        <div class="arcade-buttons" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+      </div>
+
+      <div class="touch-controls" id="touch-controls" aria-label="Touch-Steuerung">
+        <div class="dpad"><button data-action="up" aria-label="Nach oben">▲</button><button data-action="left" aria-label="Nach links">◀</button><button data-action="down" aria-label="Nach unten">▼</button><button data-action="right" aria-label="Nach rechts">▶</button></div>
+        <div class="touch-actions"><button data-action="cycle" aria-label="Waffe wechseln">WAFFE</button><button data-action="force" aria-label="Satellit umschalten">FORCE</button><button data-action="bomb" aria-label="Wasserbombe">BOMBE</button><button data-action="charge" aria-label="Ladeschuss">LADEN</button><button class="touch-fire" data-action="fire" aria-label="Schießen">FEUER</button></div>
+      </div>
+    </section>
+
+    <div class="cards">
+      <section class="card player-card">
+        <div class="portrait"><img src="assets/Nemesis316.png" alt="Nemesis316 mit Headset und Mikrofon" width="410" height="328"><span>PLAYER 01</span></div>
+        <div class="card-copy">
+          <p class="eyebrow">DER MANN. DER MYTHOS. DIE FLASCHE.</p>
+          <h2>Kein Grasgeruch.<br>Keine Kompromisse.</h2>
+          <p>Nemesis316 wollte nur streamen und genug trinken. Dann schalteten sich die intergalaktischen Killer Kiffer zu und hatten plötzlich seine Flasche. <strong>Halodris!</strong></p>
+          <div class="rick-note"><span class="mod-badge">MOD</span><p><strong>DarthRick ist dabei.</strong> Neue Gegner? Erst mal freundlich begrüßen. Man hat schließlich Manieren.</p></div>
+        </div>
+      </section>
+
+      <section class="card leaderboard-card" aria-labelledby="leaderboard-title">
+        <div class="card-heading"><div><p class="eyebrow">DIE BESTEN DER CREW</p><h2 id="leaderboard-title" class="bubble small">HALL OF FLAME</h2></div><span class="leaderboard-mode" id="leaderboard-mode">LOKAL</span></div>
+        <div class="leaderboard-table"><div class="leaderboard-head"><span>#</span><span>PILOT</span><span>SCORE</span></div><ol id="leaderboard-list"><li class="leaderboard-empty">Noch keine Helden. Die erste Runde gehört dir.</li></ol></div>
+        <p class="leaderboard-note" id="leaderboard-note">Top 10 · Highscores werden in diesem Browser gespeichert.</p>
+      </section>
+
+      <section class="card arsenal-card" aria-labelledby="arsenal-title">
+        <p class="eyebrow">BESTÜCKUNG</p>
+        <h2 id="arsenal-title" class="bubble small">WAFFEN &amp; POWER-UPS</h2>
+        <ul class="arsenal">
+          <li><b class="w-aqua">A</b><span><strong>Aqua-Laser</strong> Sauber, zuverlässig, später doppelt.</span></li>
+          <li><b class="w-spread">F</b><span><strong>Sprudel-Streuer</strong> Fächerschuss für den Nahbereich.</span></li>
+          <li><b class="w-beam">W</b><span><strong>Wasserwerfer</strong> Durchschlägt ganze Reihen.</span></li>
+          <li><b class="w-homing">B</b><span><strong>Seifenblasen</strong> Suchen ihr Ziel selbst.</span></li>
+          <li><b class="w-orbit">K</b><span><strong>Kronkorken-Orbit</strong> Rupft und blockt Kugeln.</span></li>
+        </ul>
+        <p class="arsenal-extras">Dazu: <b>Schild-Blase</b> · <b>Speed</b> · <b>Zeitlupe</b> · <b>Magnet</b> · <b>Carlton-Dance</b> · <b>1-UP-Flasche</b>. Gleiche Kapsel = Stufe hoch.</p>
+      </section>
+    </div>
+
+    <footer class="site-footer"><span><b>NEMESIS316 GEGEN DIE INTERGALAKTISCHEN KILLER KIFFER</b> · FAN-GAME FÜR DIE COMMUNITY</span><span>8-BIT-SEELE. XXL-DURST. <span class="footer-star">✦</span></span></footer>
+  </main>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <noscript>Bitte aktiviere JavaScript, um das Spiel zu spielen.</noscript>
+</body>
+</html>

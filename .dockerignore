@@ -1,0 +1,11 @@
+.git
+.agents
+.codex
+.aws
+node_modules
+data
+tests
+screenshots
+README.md
+assets/gen/raw
+.dev-*.html
