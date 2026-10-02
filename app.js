@@ -202,6 +202,7 @@ function toggleSound() {
   saveSettings();
 }
 $('sound-button').addEventListener('click', toggleSound);
+$('twitch-link').addEventListener('click', () => track('twitch_click'));
 $('fullscreen-button').addEventListener('click', async () => {
   try {
     if (document.fullscreenElement) await document.exitFullscreen();

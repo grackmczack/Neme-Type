@@ -82,6 +82,7 @@ test('php collect: stores whitelisted events, drops junk, respects Do-Not-Track 
   assert.equal((await post(origin, '/api/collect', { n: 'pageview', p: '/', r: 'example.org', sw: 1280, t: 0 }, ua)).status, 204);
   assert.equal((await post(origin, '/api/collect', { n: 'game_start', d: { difficulty: 'normal', intro: 1 }, p: '/', sw: 1280 }, ua)).status, 204);
   assert.equal((await post(origin, '/api/collect', { n: 'game_end', d: { won: 1, stage: 4, score: 53030, kills: 103, secs: 534, difficulty: 'hard', cheated: 0 }, p: '/' }, ua)).status, 204);
+  assert.equal((await post(origin, '/api/collect', { n: 'twitch_click', p: '/' }, ua)).status, 204);
   assert.equal((await post(origin, '/api/collect', { n: 'evil<script>', d: { x: 1 } }, ua)).status, 204, 'unknown events are ignored');
   assert.equal((await post(origin, '/api/collect', { n: 'pageview' }, { ...ua, DNT: '1' })).status, 204);
   assert.equal((await post(origin, '/api/collect', { n: 'pageview' }, { ...ua, 'User-Agent': 'Googlebot/2.1' })).status, 204);

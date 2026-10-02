@@ -34,7 +34,7 @@ $enum = static fn (mixed $v, array $allowed): ?string => (is_string($v) && in_ar
 $row = ['stage' => null, 'difficulty' => null, 'won' => null, 'score' => null, 'secs' => null, 'kills' => null, 'intro' => null, 'cheated' => null, 'flawless' => null];
 $diffs = ['easy', 'normal', 'hard'];
 switch ($name) {
-    case 'pageview': case 'intro_done': case 'intro_skipped': case 'sound_on': case 'sound_off': case 'konami': case 'fullscreen': case 'score_saved':
+    case 'pageview': case 'twitch_click': case 'intro_done': case 'intro_skipped': case 'sound_on': case 'sound_off': case 'konami': case 'fullscreen': case 'score_saved':
         break;
     case 'game_start':
         $row['difficulty'] = $enum($props['difficulty'] ?? null, $diffs);

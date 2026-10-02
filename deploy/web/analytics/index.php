@@ -108,6 +108,7 @@ foreach (rows("SELECT stage, COUNT(*) v FROM events WHERE name='game_end' AND wo
 $bossFlawless = [];
 foreach (rows("SELECT stage, COUNT(*) v, SUM(flawless) f FROM events WHERE name='boss_down' AND day >= ? GROUP BY stage ORDER BY stage", [$since]) as $r) $bossFlawless[] = ['Boss ' . $r['stage'] . ' besiegt (davon ohne Treffer: ' . (int) $r['f'] . ')', (int) $r['v']];
 $features = [
+    ['Klick auf Twitch-Link', (int) one("SELECT COUNT(*) FROM events WHERE name='twitch_click' AND day >= ?", [$since])],
     ['Konami-Code benutzt', (int) one("SELECT COUNT(*) FROM events WHERE name='konami' AND day >= ?", [$since])],
     ['Ton eingeschaltet', (int) one("SELECT COUNT(*) FROM events WHERE name='sound_on' AND day >= ?", [$since])],
     ['Vollbild genutzt', (int) one("SELECT COUNT(*) FROM events WHERE name='fullscreen' AND day >= ?", [$since])],
